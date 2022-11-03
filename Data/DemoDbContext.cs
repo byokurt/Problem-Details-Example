@@ -1,0 +1,30 @@
+﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Metadata;
+using ProblemDetailsExample.Data.Entities;
+
+namespace ProblemDetailsExample.Data;
+
+public class DemoDbContext : DbContext
+{
+    public DemoDbContext()
+    {
+    }
+
+    public DemoDbContext(DbContextOptions<DemoDbContext> options) : base(options)
+    {
+    }
+
+    public DbSet<User> Users { get; set; }
+
+    protected override void OnModelCreating(ModelBuilder builder)
+    {
+        builder.ApplyConfigurationsFromAssembly(typeof(DemoDbContext).Assembly);
+
+        foreach (IMutableForeignKey relationship in builder.Model.GetEntityTypes().SelectMany(e => e.GetForeignKeys()))
+        {
+            relationship.DeleteBehavior = DeleteBehavior.Restrict;
+        }
+
+        base.OnModelCreating(builder);
+    }
+}
