@@ -2,5 +2,5 @@
 
 public class Demo
 {
-    public string Title { get; set; }
+    public string? Title { get; set; }
 }

@@ -5,23 +5,19 @@ namespace ProblemDetailsExample.Extensions;
 
 public static class HttpContentExtensions
 {
-    public static async Task<T> ReadAsJsonAsync<T>(this HttpContent content, JsonSerializerOptions jsonSerializerOptions = null)
+    public static async Task<T> ReadAsJsonAsync<T>(this HttpContent content)
     {
-        if (jsonSerializerOptions == null)
+        JsonSerializerOptions jsonSerializerOptions = new JsonSerializerOptions
         {
-            jsonSerializerOptions = new JsonSerializerOptions
-            {
-                PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
-                Converters =
+            PropertyNameCaseInsensitive = true,
+            PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
+            Converters =
                 {
                     new JsonStringEnumConverter()
                 }
-            };
-        }
+        };
 
-        string json = await content.ReadAsStringAsync();
-
-        T value = JsonSerializer.Deserialize<T>(json, jsonSerializerOptions);
+        T value = await content.ReadFromJsonAsync<T>(jsonSerializerOptions);
 
         return value;
     }

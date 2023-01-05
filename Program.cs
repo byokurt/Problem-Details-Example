@@ -33,11 +33,11 @@ builder.Services.AddSwaggerGen();
 
 builder.Services.AddHealthChecks().AddCheck("self", () => HealthCheckResult.Healthy(), tags: new[] { "Liveness", "Readiness" });
 
-builder.Services.AddDbContext<DemoDbContext>(options => { options.UseSqlServer(builder.Configuration.GetConnectionString("DemoCnn"), sqlOptions => { sqlOptions.EnableRetryOnFailure(3); }); });
+builder.Services.AddDbContext<DemoDbContext>(options => { options.UseSqlServer(builder.Configuration.GetConnectionString("DemoCnn") ?? string.Empty, sqlOptions => { sqlOptions.EnableRetryOnFailure(3); }); });
 
 builder.Services.AddHttpClient<IDemoApiProxy, DemoApiProxy>(c =>
 {
-    c.BaseAddress = new Uri(builder.Configuration["DemoApiUrl"]);
+    c.BaseAddress = new Uri(builder.Configuration["DemoApiUrl"] ?? string.Empty);
     c.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
 }).AddPolicyHandler(HttpPolicies.GetRetryPolicy).AddPolicyHandler(HttpPolicies.GetCircuitBreakerPolicy());
 
@@ -67,11 +67,10 @@ app.UseRouting();
 
 app.UseAuthorization();
 
-app.UseEndpoints(endpoints =>
-{
-    endpoints.MapControllers();
-    endpoints.MapHealthChecks("/live", new HealthCheckOptions() {Predicate = p => p.Tags.Contains("Liveness")});
-    endpoints.MapHealthChecks("/ready", new HealthCheckOptions() {Predicate = p => p.Tags.Contains("Readiness")});
-});
+app.MapControllers();
+
+app.MapHealthChecks("/live");
+
+app.MapHealthChecks("/ready");
 
 app.Run();
