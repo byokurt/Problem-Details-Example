@@ -5,7 +5,7 @@ namespace ProblemDetailsExample.Extensions;
 
 public static class HttpContentExtensions
 {
-    public static async Task<T> ReadAsJsonAsync<T>(this HttpContent content)
+    public static async Task<T?> ReadAsJsonAsync<T>(this HttpContent content)
     {
         JsonSerializerOptions jsonSerializerOptions = new JsonSerializerOptions
         {
@@ -17,7 +17,7 @@ public static class HttpContentExtensions
                 }
         };
 
-        T value = await content.ReadFromJsonAsync<T>(jsonSerializerOptions);
+        T? value = await content.ReadFromJsonAsync<T>(jsonSerializerOptions);
 
         return value;
     }
