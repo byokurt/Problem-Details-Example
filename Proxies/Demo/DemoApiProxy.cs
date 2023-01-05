@@ -15,7 +15,7 @@ public class DemoApiProxy : IDemoApiProxy
         _logger = logger;
     }
 
-    public async Task<DemoResponse> QueryTransaction(DemoRequest request)
+    public async Task<DemoResponse?> QueryTransaction(DemoRequest request)
     {
         string queryParams = request.ToQueryString();
 
@@ -30,6 +30,8 @@ public class DemoApiProxy : IDemoApiProxy
             throw new ApplicationException($"There was a problem while getting data from Demo Api ResponseStatusCode:{(int) httpResponseMessage.StatusCode} ResponseBody:{responseContent}");
         }
 
-        return await httpResponseMessage.Content.ReadAsJsonAsync<DemoResponse>();
+        DemoResponse? demoResponse = await httpResponseMessage.Content.ReadAsJsonAsync<DemoResponse>();
+
+        return demoResponse;
     }
 }

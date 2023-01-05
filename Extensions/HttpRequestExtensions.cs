@@ -34,7 +34,7 @@ public static class HttpRequestExtensions
                 name = attribute.Name;
             }
 
-            object value = p.GetValue(obj, null);
+            object? value = p.GetValue(obj, null);
 
             if (value is ICollection enumerable)
             {

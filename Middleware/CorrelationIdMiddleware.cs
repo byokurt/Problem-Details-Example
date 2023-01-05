@@ -15,11 +15,11 @@ public class CorrelationIdMiddleware
 
     public async Task Invoke(HttpContext context)
     {
-        string correlationId;
+        string? correlationId;
 
         if (context.Request.Headers.TryGetValue(CorrelationIdHeaderKey, out StringValues correlationIds))
         {
-            correlationId = correlationIds.FirstOrDefault(k => k.Equals(CorrelationIdHeaderKey));
+            correlationId = correlationIds.FirstOrDefault(k => k == CorrelationIdHeaderKey);
         }
         else
         {
