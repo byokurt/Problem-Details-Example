@@ -26,8 +26,12 @@
       <None Remove="Jobs\" />
       <None Remove="DistributedLock.Redis" />
       <None Remove="Microsoft.Extensions.Caching.StackExchangeRedis" />
+      <None Remove="Models\" />
+      <None Remove="Models\Pagination\" />
     </ItemGroup>
     <ItemGroup>
       <Folder Include="Jobs\" />
+      <Folder Include="Models\" />
+      <Folder Include="Models\Pagination\" />
     </ItemGroup>
 </Project>
