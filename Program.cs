@@ -43,6 +43,10 @@ builder.Services.AddHttpClient<IDemoApiProxy, DemoApiProxy>(c =>
 
 builder.Services.AddSwagger();
 
+builder.Services.AddRedis(builder.Configuration);
+
+builder.Services.AddBackgroundService();
+
 var app = builder.Build();
 
 app.UsePathBase("/demo");
