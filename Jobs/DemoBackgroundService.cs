@@ -37,7 +37,7 @@ namespace ProblemDetailsExample.Jobs
 
         private async Task Execute(CancellationToken cancellationToken)
         {
-            using (await _distributedSynchronizationProvider.AcquireLockAsync("", null, cancellationToken))
+            using (await _distributedSynchronizationProvider.AcquireLockAsync("DemoBackgroundService", null, cancellationToken))
             {
                 //get process
             }
