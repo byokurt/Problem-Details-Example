@@ -18,7 +18,7 @@ public static class ServiceCollectionExtensions
 
     public static void AddRedis(this IServiceCollection services, IConfiguration configuration)
     {
-        string redisConnectionString = configuration.GetConnectionString("redis") ?? string.Empty;
+        string redisConnectionString = configuration.GetConnectionString("Redis") ?? string.Empty;
 
         services.AddStackExchangeRedisCache(options => { options.Configuration = redisConnectionString; });
 
