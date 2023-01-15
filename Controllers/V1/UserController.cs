@@ -27,7 +27,6 @@ public class UserController : ControllerBase
         _demoDbContext = demoDbContext;
     }
 
-
     [HttpGet("{id}")]
     [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(ValidationProblemDetails))]
     [ProducesResponseType(StatusCodes.Status404NotFound, Type = typeof(ProblemDetails))]
