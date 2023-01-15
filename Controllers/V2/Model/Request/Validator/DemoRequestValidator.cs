@@ -1,12 +1,12 @@
 ﻿using FluentValidation;
 using FluentValidation.Results;
-using ProblemDetailsExample.V1.Controllers.Model.Request;
+using ProblemDetailsExample.V2.Controllers.Model.Request;
 
-namespace ProblemDetailsExample.Controllers.V1.Model.Request.Validator;
+namespace ProblemDetailsExample.Controllers.V2.Model.Request.Validator;
 
-public class DemoValidator : AbstractValidator<Demo>
+public class DemoRequestValidator : AbstractValidator<DemoRequest>
 {
-    protected override bool PreValidate(ValidationContext<Demo> context, ValidationResult result)
+    protected override bool PreValidate(ValidationContext<DemoRequest> context, ValidationResult result)
     {
         if (context.InstanceToValidate == null)
         {
@@ -17,7 +17,7 @@ public class DemoValidator : AbstractValidator<Demo>
         return true;
     }
 
-    public DemoValidator()
+    public DemoRequestValidator()
     {
         RuleLevelCascadeMode = CascadeMode.Stop;
         ClassLevelCascadeMode = CascadeMode.Stop;

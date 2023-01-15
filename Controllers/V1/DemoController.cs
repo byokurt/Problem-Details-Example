@@ -38,7 +38,7 @@ public class DemoController : ControllerBase
 
     [HttpPost]
     [ProducesResponseType(StatusCodes.Status400BadRequest, Type = typeof(ValidationProblemDetails))]
-    public string Post(Demo request)
+    public string Post(DemoRequest request)
     {
         return "Ok";
     }

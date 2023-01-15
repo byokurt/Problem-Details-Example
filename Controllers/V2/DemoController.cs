@@ -57,9 +57,9 @@ public class DemoController : ControllerBase
     }
 
     [HttpPost]
-    [ProducesResponseType(StatusCodes.Status400BadRequest, Type = typeof(ValidationProblemDetails))]
-    public string Post(Demo request)
+    [ProducesResponseType(StatusCodes.Status201Created, Type = typeof(ValidationProblemDetails))]
+    public async Task<IActionResult> Post(DemoRequest request)
     {
-        return "Ok";
+        return Created("", 1);
     }
 }
