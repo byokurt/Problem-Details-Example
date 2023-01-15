@@ -2,7 +2,7 @@
 
 namespace ProblemDetailsExample.Controllers.V2.Model.Response
 {
-    public class GetUsersResponse
+    public class QueryUsersResponse
     {
         public int Id { get; set; }
 

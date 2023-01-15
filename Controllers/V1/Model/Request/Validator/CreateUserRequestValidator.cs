@@ -4,9 +4,9 @@ using ProblemDetailsExample.V1.Controllers.Model.Request;
 
 namespace ProblemDetailsExample.Controllers.V1.Model.Request.Validator;
 
-public class DemoRequestValidator : AbstractValidator<DemoRequest>
+public class CreateUserRequestValidator : AbstractValidator<CreateUserRequest>
 {
-    protected override bool PreValidate(ValidationContext<DemoRequest> context, ValidationResult result)
+    protected override bool PreValidate(ValidationContext<CreateUserRequest> context, ValidationResult result)
     {
         if (context.InstanceToValidate == null)
         {
@@ -17,11 +17,12 @@ public class DemoRequestValidator : AbstractValidator<DemoRequest>
         return true;
     }
 
-    public DemoRequestValidator()
+    public CreateUserRequestValidator()
     {
         RuleLevelCascadeMode = CascadeMode.Stop;
         ClassLevelCascadeMode = CascadeMode.Stop;
 
-        RuleFor(model => model.Title).NotNull().NotEmpty();
+        RuleFor(model => model.Name).NotNull().NotEmpty();
+        RuleFor(model => model.Surename).NotNull().NotEmpty();
     }
 }
