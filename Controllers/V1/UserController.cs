@@ -71,6 +71,38 @@ public class UserController : ControllerBase
         return Created("", user.Id);
     }
 
+
+    [HttpDelete("{id}")]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    [ProducesResponseType(StatusCodes.Status404NotFound, Type = typeof(ProblemDetails))]
+    public async Task<IActionResult> Delete(int id)
+    {
+        User? user = await _demoDbContext.Users.FirstOrDefaultAsync(w => w.Id == id);
+
+        if (user == null)
+        {
+            ProblemDetails problemDetails = new ProblemDetails()
+            {
+                Status = StatusCodes.Status404NotFound,
+                Title = "User Not Found.",
+                Type = "user-not-found",
+                Detail = "There is no record at Db for the id",
+                Extensions =
+                {
+                    new KeyValuePair<string, object?>("Id", 1)
+                }
+            };
+
+            throw new ProblemDetailsException(problemDetails);
+        }
+
+        _demoDbContext.Users.Remove(user);
+
+        await _demoDbContext.SaveChangesAsync();
+
+        return NoContent();
+    }
+
     [HttpGet]
     [ProducesResponseType(StatusCodes.Status200OK)]
     public async Task<IActionResult> Query(QueryUsersRequest request)
