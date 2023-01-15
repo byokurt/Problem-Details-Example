@@ -68,7 +68,7 @@ public class UserController : ControllerBase
 
         await _demoDbContext.SaveChangesAsync();
 
-        return Created("", user.Id);
+        return Created("/users/", user.Id);
     }
 
 

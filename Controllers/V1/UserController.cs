@@ -68,7 +68,7 @@ public class UserController : ControllerBase
 
         await _demoDbContext.SaveChangesAsync();
 
-        return Created("", user.Id);
+        return Created("/users/", user.Id);
     }
 
 
@@ -107,7 +107,7 @@ public class UserController : ControllerBase
     [ProducesResponseType(StatusCodes.Status200OK)]
     public async Task<IActionResult> Query(QueryUsersRequest request)
     {
-        IQueryable<User> query = _demoDbContext.Users.AsNoTracking().Where(w => w.IsDeleted);
+        IQueryable<User> query = _demoDbContext.Users.AsNoTracking().Where(w => w.IsDeleted == false);
 
         if (!string.IsNullOrWhiteSpace(request.Name))
         {
