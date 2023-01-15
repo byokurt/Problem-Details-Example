@@ -4,11 +4,11 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace ProblemDetailsExample.Models.Pagination
 {
-    public class PagedResult<T> : OkObjectResult
+    public class PageResult<T> : OkObjectResult
     {
         private readonly IPage<T> _page;
 
-        public PagedResult(IPage<T> page) : base(page.Items)
+        public PageResult(IPage<T> page) : base(page.Items)
         {
             _page = page;
         }
