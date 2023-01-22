@@ -72,7 +72,6 @@ public class UserController : ControllerBase
         return Created("/users/", user.Id);
     }
 
-
     [HttpDelete("{id}")]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(StatusCodes.Status404NotFound, Type = typeof(ProblemDetails))]
@@ -108,7 +107,7 @@ public class UserController : ControllerBase
     [ProducesResponseType(StatusCodes.Status200OK)]
     public async Task<IActionResult> Query(QueryUsersRequest request)
     {
-        IQueryable<User> query = _demoDbContext.Users.AsNoTracking().Where(w => w.IsDeleted);
+        IQueryable<User> query = _demoDbContext.Users.AsNoTracking().Where(w => w.IsDeleted == false);
 
         if (!string.IsNullOrWhiteSpace(request.Name))
         {
