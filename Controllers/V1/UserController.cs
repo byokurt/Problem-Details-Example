@@ -107,7 +107,7 @@ public class UserController : ControllerBase
     [ProducesResponseType(StatusCodes.Status200OK)]
     public async Task<IActionResult> Query(QueryUsersRequest request)
     {
-        IQueryable<User> query = _demoDbContext.Users.AsNoTracking().Where(w => w.IsDeleted == false);
+        IQueryable<User> query = _demoDbContext.Users.AsNoTracking();
 
         if (!string.IsNullOrWhiteSpace(request.Name))
         {

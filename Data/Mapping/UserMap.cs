@@ -13,5 +13,7 @@ public class UserMap : IEntityTypeConfiguration<User>
         builder.HasQueryFilter(p => !p.IsDeleted);
 
         builder.Property(p => p.Name).HasColumnType("nvarchar(256)");
+        builder.Property(p => p.Surename).HasColumnType("nvarchar(256)");
+        builder.Property(p => p.IsDeleted).HasColumnType("BIT");
     }
 }
