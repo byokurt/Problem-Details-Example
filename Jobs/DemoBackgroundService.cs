@@ -6,6 +6,8 @@ namespace ProblemDetailsExample.Jobs
 {
     public class DemoBackgroundService : BackgroundService
     {
+        private readonly TimeSpan _period = TimeSpan.FromSeconds(5);
+
         private readonly ILogger<DemoBackgroundService> _logger;
 
         private readonly RedisDistributedSynchronizationProvider _distributedSynchronizationProvider;
@@ -18,21 +20,12 @@ namespace ProblemDetailsExample.Jobs
 
         protected override async Task ExecuteAsync(CancellationToken cancellationToken)
         {
-            try
-            {
-                do
-                {
-                    await Execute(cancellationToken);
+            using PeriodicTimer periodicTimer = new PeriodicTimer(_period);
 
-                    await Task.Delay(18000, cancellationToken);
-                }
-                while (!cancellationToken.IsCancellationRequested);
-            }
-            catch (Exception ex)
+            while (!cancellationToken.IsCancellationRequested && await periodicTimer.WaitForNextTickAsync(cancellationToken))
             {
-                _logger.LogError($"DemoBackgroundService has error. Error Message: {ex.Message}");
+                await Execute(cancellationToken);
             }
-
         }
 
         private async Task Execute(CancellationToken cancellationToken)
