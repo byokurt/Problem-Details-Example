@@ -59,10 +59,11 @@ public class UserController : ControllerBase
     [ProducesResponseType(StatusCodes.Status400BadRequest, Type = typeof(ValidationProblemDetails))]
     public async Task<IActionResult> Post(CreateUserRequest request)
     {
-        User user = new User();
-
-        user.Name = request.Name;
-        user.Surename = request.Surename;
+        User user = new User()
+        {
+            Name = request.Name,
+            Surename = request.Surename
+        };
 
         _demoDbContext.Users.Add(user);
 
@@ -70,7 +71,6 @@ public class UserController : ControllerBase
 
         return Created("/users/", user.Id);
     }
-
 
     [HttpDelete("{id}")]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
@@ -136,4 +136,5 @@ public class UserController : ControllerBase
 
         return new PageResult<QueryUsersResponse>(result);
     }
+
 }
