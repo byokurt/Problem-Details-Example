@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using ProblemDetailsExample.Controllers.V1.Model.Request;
@@ -25,6 +26,40 @@ public class UserController : ControllerBase
     {
         _logger = logger;
         _demoDbContext = demoDbContext;
+    }
+
+    [HttpGet]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    public async Task<IActionResult> Query(QueryUsersRequest request)
+    {
+        IQueryable<User> query = _demoDbContext.Users.AsNoTracking();
+
+        if (!string.IsNullOrWhiteSpace(request.Name))
+        {
+            query = query.Where(w => w.Name == request.Name);
+        }
+
+        if (!string.IsNullOrWhiteSpace(request.Surename))
+        {
+            query = query.Where(w => w.Surename == request.Surename);
+        }
+
+        if (request.Id != null)
+        {
+            query = query.Where(w => w.Id == request.Id);
+        }
+
+        request.Order = PaginationOrderType.Asc;
+        request.OrderBy = nameof(Data.Entities.User.Name);
+
+        IPage<QueryUsersResponse> result = await query.Select(x => new QueryUsersResponse
+        {
+            Id = x.Id,
+            Title = x.Name,
+            IsDeleted = x.IsDeleted
+        }).ToPageAsync(request);
+
+        return new PageResult<QueryUsersResponse>(result);
     }
 
     [HttpGet("{id}")]
@@ -103,38 +138,41 @@ public class UserController : ControllerBase
         return NoContent();
     }
 
-    [HttpGet]
-    [ProducesResponseType(StatusCodes.Status200OK)]
-    public async Task<IActionResult> Query(QueryUsersRequest request)
+    [HttpPatch("{id}/name")]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    [ProducesResponseType(StatusCodes.Status404NotFound, Type = typeof(ProblemDetails))]
+    public async Task<IActionResult> Update([FromRoute] int id, [FromBody] JsonPatchDocument<PatchUserRequest> request)
     {
-        IQueryable<User> query = _demoDbContext.Users.AsNoTracking();
+        User? user = await _demoDbContext.Users.FirstOrDefaultAsync(w => w.Id == id);
 
-        if (!string.IsNullOrWhiteSpace(request.Name))
+        if (user == null)
         {
-            query = query.Where(w => w.Name == request.Name);
+            ProblemDetails problemDetails = new ProblemDetails()
+            {
+                Status = StatusCodes.Status404NotFound,
+                Title = "User Not Found.",
+                Type = "user-not-found",
+                Detail = "There is no record at Db for the id",
+                Extensions =
+                {
+                    new KeyValuePair<string, object?>("Id", 1)
+                }
+            };
+
+            throw new ProblemDetailsException(problemDetails);
         }
 
-        if (!string.IsNullOrWhiteSpace(request.Surename))
+        PatchUserRequest patchUserRequest = new PatchUserRequest
         {
-            query = query.Where(w => w.Surename == request.Surename);
-        }
+            Name = user.Name
+        };
 
-        if (request.Id != null)
-        {
-            query = query.Where(w => w.Id == request.Id);
-        }
+        request.ApplyTo(patchUserRequest);
 
-        request.Order = PaginationOrderType.Asc;
-        request.OrderBy = nameof(Data.Entities.User.Name);
+        user.Name = patchUserRequest.Name;
 
-        IPage<QueryUsersResponse> result = await query.Select(x => new QueryUsersResponse
-        {
-            Id = x.Id,
-            Title = x.Name,
-            IsDeleted = x.IsDeleted
-        }).ToPageAsync(request);
+        await _demoDbContext.SaveChangesAsync();
 
-        return new PageResult<QueryUsersResponse>(result);
+        return NoContent();
     }
-
 }

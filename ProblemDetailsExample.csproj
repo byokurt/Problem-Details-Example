@@ -21,6 +21,7 @@
         <PackageReference Include="DistributedLock.Redis" Version="1.0.2" />
         <PackageReference Include="Microsoft.Extensions.Caching.StackExchangeRedis" Version="7.0.2" />
         <PackageReference Include="System.Linq.Dynamic.Core" Version="1.2.24" />
+        <PackageReference Include="Microsoft.AspNetCore.JsonPatch" Version="7.0.2" />
     </ItemGroup>
 
     <ItemGroup>
@@ -31,6 +32,7 @@
       <None Remove="Models\Pagination\" />
       <None Remove="Controllers\V2\Model\Response\" />
       <None Remove="System.Linq.Dynamic.Core" />
+      <None Remove="Microsoft.AspNetCore.JsonPatch" />
     </ItemGroup>
     <ItemGroup>
       <Folder Include="Jobs\" />
