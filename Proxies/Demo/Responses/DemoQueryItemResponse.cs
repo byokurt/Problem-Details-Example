@@ -1,6 +1,6 @@
 ﻿namespace ProblemDetailsExample.Proxies.Demo.Responses;
 
-public class DemoResponse
+public class DemoQueryItemResponse
 {
     public int Id { get; set; }
 }

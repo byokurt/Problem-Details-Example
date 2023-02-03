@@ -2,8 +2,8 @@
 
 namespace ProblemDetailsExample.Proxies.Demo.Requestes;
 
-public class DemoRequest
+public class DemoCreateRequest
 {
-    [JsonPropertyName("id")]
-    public int Id { get; set; }
+    [JsonPropertyName("name")]
+    public string? Name { get; set; }
 }
