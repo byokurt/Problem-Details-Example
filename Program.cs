@@ -45,6 +45,8 @@ builder.Services.AddSwagger();
 
 builder.Services.AddRedis(builder.Configuration);
 
+builder.Services.AddMasTransit(builder.Configuration);
+
 builder.Services.AddBackgroundService();
 
 var app = builder.Build();

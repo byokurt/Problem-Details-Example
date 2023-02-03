@@ -22,6 +22,10 @@
         <PackageReference Include="Microsoft.Extensions.Caching.StackExchangeRedis" Version="7.0.2" />
         <PackageReference Include="System.Linq.Dynamic.Core" Version="1.2.24" />
         <PackageReference Include="Microsoft.AspNetCore.JsonPatch" Version="7.0.2" />
+        <PackageReference Include="MassTransit.Extensions.DependencyInjection" Version="7.3.1" />
+        <PackageReference Include="MassTransit.AspNetCore" Version="7.3.1" />
+        <PackageReference Include="MassTransit" Version="8.0.7" />
+        <PackageReference Include="MassTransit.RabbitMQ" Version="8.0.7" />
     </ItemGroup>
 
     <ItemGroup>
@@ -33,11 +37,19 @@
       <None Remove="Controllers\V2\Model\Response\" />
       <None Remove="System.Linq.Dynamic.Core" />
       <None Remove="Microsoft.AspNetCore.JsonPatch" />
+      <None Remove="Consumers\" />
+      <None Remove="MassTransit" />
+      <None Remove="MassTransit.RabbitMQ" />
+      <None Remove="MassTransit.Extensions.DependencyInjection" />
+      <None Remove="MassTransit.AspNetCore" />
+      <None Remove="Event\" />
     </ItemGroup>
     <ItemGroup>
       <Folder Include="Jobs\" />
       <Folder Include="Models\" />
       <Folder Include="Models\Pagination\" />
       <Folder Include="Controllers\V2\Model\Response\" />
+      <Folder Include="Consumers\" />
+      <Folder Include="Events\" />
     </ItemGroup>
 </Project>

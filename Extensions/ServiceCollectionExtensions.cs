@@ -1,7 +1,9 @@
 ﻿using Medallion.Threading.Redis;
 using Microsoft.OpenApi.Models;
 using ProblemDetailsExample.Jobs;
+using ProblemDetailsExample.Consumers;
 using StackExchange.Redis;
+using MassTransit;
 
 namespace ProblemDetailsExample.Extensions;
 
@@ -11,8 +13,8 @@ public static class ServiceCollectionExtensions
     {
         services.AddSwaggerGen(c =>
         {
-            c.SwaggerDoc("v1", new OpenApiInfo {Title = "Demo API", Version = "v1"});
-            c.SwaggerDoc("v2", new OpenApiInfo {Title = "Demo API", Version = "v2"});
+            c.SwaggerDoc("v1", new OpenApiInfo { Title = "Demo API", Version = "v1" });
+            c.SwaggerDoc("v2", new OpenApiInfo { Title = "Demo API", Version = "v2" });
         });
     }
 
@@ -36,6 +38,38 @@ public static class ServiceCollectionExtensions
     public static IServiceCollection AddBackgroundService(this IServiceCollection services)
     {
         services.AddHostedService<DemoBackgroundService>();
+
+        return services;
+    }
+
+    public static IServiceCollection AddMasTransit(this IServiceCollection services, IConfiguration configuration)
+    {
+        services.AddMassTransit(x =>
+        {
+            x.AddConsumer<DemoConsumer>();
+
+            x.UsingRabbitMq((context, cfg) =>
+            {
+                cfg.Host(new Uri(configuration["RabbitMQ:Host"] ?? string.Empty), c =>
+                {
+                    c.Username(configuration["RabbitMQ:UserName"]);
+                    c.Password(configuration["RabbitMQ:Password"]);
+                });
+
+                cfg.UseConcurrencyLimit(90);
+
+                cfg.UseRetry(configurator =>
+                {
+                    configurator.Incremental(10, TimeSpan.FromMilliseconds(100), TimeSpan.FromMilliseconds(2000));
+                    configurator.Ignore<MassTransitApplicationException>();
+                });
+
+                cfg.ReceiveEndpoint(nameof(DemoConsumer), ep =>
+                {
+                    ep.ConfigureConsumer<DemoConsumer>(context);
+                });
+            });
+        });
 
         return services;
     }

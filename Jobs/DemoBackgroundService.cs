@@ -1,5 +1,4 @@
-﻿using System;
-using Medallion.Threading;
+﻿using Medallion.Threading;
 using Medallion.Threading.Redis;
 
 namespace ProblemDetailsExample.Jobs
@@ -32,7 +31,7 @@ namespace ProblemDetailsExample.Jobs
         {
             using (await _distributedSynchronizationProvider.AcquireLockAsync("DemoBackgroundService", null, cancellationToken))
             {
-                //get process
+                _logger.LogInformation("Running process");
             }
         }
     }
