@@ -6,11 +6,12 @@ using ProblemDetailsExample.Controllers.V1.Model.Request;
 using ProblemDetailsExample.Controllers.V1.Model.Response;
 using ProblemDetailsExample.Data;
 using ProblemDetailsExample.Data.Entities;
-using ProblemDetailsExample.Extensions;
 using ProblemDetailsExample.Filters;
 using ProblemDetailsExample.Models.Pagination;
 using ProblemDetailsExample.V1.Controllers.Model.Request;
 using ProblemDetailsExample.Events;
+using Microsoft.Extensions.Caching.Distributed;
+using ProblemDetailsExample.Extensions;
 
 namespace ProblemDetailsExample.Controllers.V1;
 
@@ -24,13 +25,19 @@ public class UserController : ControllerBase
     private readonly DemoDbContext _demoDbContext;
     private readonly ISendEndpointProvider _sendEndpointProvider;
     private readonly IBusControl _busControl;
+    private readonly IDistributedCache _distributedCache;
 
-    public UserController(ILogger<UserController> logger, DemoDbContext demoDbContext, ISendEndpointProvider sendEndpointProvider, IBusControl busControl)
+    public UserController(ILogger<UserController> logger,
+                          DemoDbContext demoDbContext,
+                          ISendEndpointProvider sendEndpointProvider,
+                          IBusControl busControl,
+                          IDistributedCache distributedCache)
     {
         _logger = logger;
         _demoDbContext = demoDbContext;
         _sendEndpointProvider = sendEndpointProvider;
         _busControl = busControl;
+        _distributedCache = distributedCache;
     }
 
     [HttpGet]
@@ -72,23 +79,30 @@ public class UserController : ControllerBase
     [ProducesResponseType(StatusCodes.Status404NotFound, Type = typeof(ProblemDetails))]
     public async Task<IActionResult> Get(int id)
     {
-        User? user = await _demoDbContext.Users.FirstOrDefaultAsync(w => w.Id == id);
+        User? user = await _distributedCache.Get<User>($"user_{id}");
 
         if (user == null)
         {
-            ProblemDetails problemDetails = new ProblemDetails()
-            {
-                Status = StatusCodes.Status404NotFound,
-                Title = "User Not Found.",
-                Type = "user-not-found",
-                Detail = "There is no record at Db for the id",
-                Extensions =
-                {
-                    new KeyValuePair<string, object?>("Id", 1)
-                }
-            };
+            user = await _demoDbContext.Users.FirstOrDefaultAsync(w => w.Id == id);
 
-            throw new ProblemDetailsException(problemDetails);
+            if (user == null)
+            {
+                ProblemDetails problemDetails = new ProblemDetails()
+                {
+                    Status = StatusCodes.Status404NotFound,
+                    Title = "User Not Found.",
+                    Type = "user-not-found",
+                    Detail = "There is no record at Db for the id",
+                    Extensions =
+                    {
+                        new KeyValuePair<string, object?>("Id", 1)
+                    }
+                };
+
+                throw new ProblemDetailsException(problemDetails);
+            }
+
+            await _distributedCache.Set($"user_{id}", user, TimeSpan.FromMinutes(5));
         }
 
         return Ok(user);
@@ -117,7 +131,7 @@ public class UserController : ControllerBase
 
         ISendEndpoint sendEndpoint = await _sendEndpointProvider.GetSendEndpoint(new Uri($"queue_demo"));
 
-        await sendEndpoint.Send(new DemoEvent() { Name = request.Name, Surname = request.Surename});
+        await sendEndpoint.Send(new DemoEvent() { Name = request.Name, Surname = request.Surename });
 
         return Created("/users/", user.Id);
     }
