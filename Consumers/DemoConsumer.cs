@@ -15,5 +15,7 @@ public class DemoConsumer : IConsumer<DemoEvent>
     public async Task Consume(ConsumeContext<DemoEvent> context)
     {
         _logger.LogInformation("Running Consumer");
+
+        await Task.CompletedTask;
     }
 }

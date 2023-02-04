@@ -6,5 +6,5 @@ public class DemoQueryResponse
 
     public int TotalPages { get; set; }
 
-    public List<DemoQueryItemResponse> QueryItems { get; set; }
+    public List<DemoQueryItemResponse>? QueryItems { get; set; }
 }

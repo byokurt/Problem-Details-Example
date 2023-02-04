@@ -1,3 +1,4 @@
+using MassTransit;
 using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -9,6 +10,7 @@ using ProblemDetailsExample.Extensions;
 using ProblemDetailsExample.Filters;
 using ProblemDetailsExample.Models.Pagination;
 using ProblemDetailsExample.V1.Controllers.Model.Request;
+using ProblemDetailsExample.Events;
 
 namespace ProblemDetailsExample.Controllers.V1;
 
@@ -19,13 +21,16 @@ namespace ProblemDetailsExample.Controllers.V1;
 public class UserController : ControllerBase
 {
     private readonly ILogger<UserController> _logger;
-
     private readonly DemoDbContext _demoDbContext;
+    private readonly ISendEndpointProvider _sendEndpointProvider;
+    private readonly IBusControl _busControl;
 
-    public UserController(ILogger<UserController> logger, DemoDbContext demoDbContext)
+    public UserController(ILogger<UserController> logger, DemoDbContext demoDbContext, ISendEndpointProvider sendEndpointProvider, IBusControl busControl)
     {
         _logger = logger;
         _demoDbContext = demoDbContext;
+        _sendEndpointProvider = sendEndpointProvider;
+        _busControl = busControl;
     }
 
     [HttpGet]
@@ -103,6 +108,16 @@ public class UserController : ControllerBase
         _demoDbContext.Users.Add(user);
 
         await _demoDbContext.SaveChangesAsync();
+
+        await _busControl.Publish<DemoEvent>(new DemoEvent()
+        {
+            Name = request.Name,
+            Surname = request.Surename
+        });
+
+        ISendEndpoint sendEndpoint = await _sendEndpointProvider.GetSendEndpoint(new Uri($"queue_demo"));
+
+        await sendEndpoint.Send(new DemoEvent() { Name = request.Name, Surname = request.Surename});
 
         return Created("/users/", user.Id);
     }
