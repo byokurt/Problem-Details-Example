@@ -65,6 +65,8 @@ public class DemoApiProxy : IDemoApiProxy
     {
         JsonPatchDocument document = new JsonPatchDocument();
 
+        document.Replace(nameof(request.Name), request.Name);
+
         string requestModel = JsonSerializer.Serialize(document.Operations);
 
         StringContent httpContent = new StringContent(requestModel, Encoding.UTF8, "application/json-patch+json");
