@@ -42,6 +42,7 @@
       <None Remove="MassTransit.Extensions.DependencyInjection" />
       <None Remove="MassTransit.AspNetCore" />
       <None Remove="Event\" />
+      <None Remove="Data\Seeds\" />
     </ItemGroup>
     <ItemGroup>
       <Folder Include="Jobs\" />
@@ -49,5 +50,6 @@
       <Folder Include="Models\Pagination\" />
       <Folder Include="Consumers\" />
       <Folder Include="Events\" />
+      <Folder Include="Data\Seeds\" />
     </ItemGroup>
 </Project>
