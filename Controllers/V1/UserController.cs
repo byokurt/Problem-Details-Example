@@ -129,7 +129,7 @@ public class UserController : ControllerBase
             Surname = request.Surename
         });
 
-        ISendEndpoint sendEndpoint = await _sendEndpointProvider.GetSendEndpoint(new Uri($"queue_demo"));
+        ISendEndpoint sendEndpoint = await _sendEndpointProvider.GetSendEndpoint(new Uri($"DemoConsumer"));
 
         await sendEndpoint.Send(new DemoEvent() { Name = request.Name, Surname = request.Surename });
 
