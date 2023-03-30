@@ -6,6 +6,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
 using ProblemDetailsExample.Constant;
 using ProblemDetailsExample.Data;
+using ProblemDetailsExample.Data.Seeds;
 using ProblemDetailsExample.Extensions;
 using ProblemDetailsExample.Filters;
 using ProblemDetailsExample.Middleware;
@@ -50,6 +51,8 @@ builder.Services.AddMasTransit(builder.Configuration);
 builder.Services.AddBackgroundService();
 
 var app = builder.Build();
+
+await Seeder.MigrateWithData(app);
 
 app.UsePathBase("/demo");
 
