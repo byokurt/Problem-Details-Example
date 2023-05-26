@@ -39,7 +39,7 @@ public class DemoApiProxy : IDemoApiProxy
         {
             TotalRecords = Convert.ToInt32(httpResponseMessage.Headers.GetValues("x-total-pages").FirstOrDefault()),
             TotalPages = Convert.ToInt32(httpResponseMessage.Headers.GetValues("x-total-records").FirstOrDefault()),
-            QueryItems = await httpResponseMessage.Content.ReadFromJsonAsync<List<DemoQueryItemResponse>>()
+            QueryItems = await httpResponseMessage.Content.ReadAsJsonAsync<List<DemoQueryItemResponse>>()
         };
 
         return demoResponse;
@@ -58,7 +58,7 @@ public class DemoApiProxy : IDemoApiProxy
             throw new ApplicationException($"There was a problem while getting data from Demo Api ResponseStatusCode:{(int)httpResponseMessage.StatusCode} ResponseBody:{responseContent}");
         }
 
-        return await httpResponseMessage.Content.ReadFromJsonAsync<DemoGetResponse>();
+        return await httpResponseMessage.Content.ReadAsJsonAsync<DemoGetResponse>();
     }
 
     public async Task UpdateUser(int id, UpdateDemoRequest request)
@@ -80,7 +80,7 @@ public class DemoApiProxy : IDemoApiProxy
 
         if (!responseMessage.IsSuccessStatusCode)
         {
-            ProblemDetails? problemDetails = await responseMessage.Content.ReadFromJsonAsync<ProblemDetails>();
+            ProblemDetails? problemDetails = await responseMessage.Content.ReadAsJsonAsync<ProblemDetails>();
 
             if (problemDetails != null)
             {
@@ -111,6 +111,6 @@ public class DemoApiProxy : IDemoApiProxy
             throw new ApplicationException($"There was a problem while setting data from Demo Api ResponseStatusCode:{(int)httpResponseMessage.StatusCode} ResponseBody:{responseContent}");
         }
 
-        return await httpResponseMessage.Content.ReadFromJsonAsync<DemoCreateResponse>();
+        return await httpResponseMessage.Content.ReadAsJsonAsync<DemoCreateResponse>();
     }
 }
