@@ -1,7 +1,7 @@
 ﻿using System;
 using ProblemDetailsExample.Models.Pagination;
 
-namespace ProblemDetailsExample.Controllers.V1.Model.Request
+namespace ProblemDetailsExample.Controllers.V1.Model.Requests
 {
     public class QueryUsersRequest : PagedRequest
     {

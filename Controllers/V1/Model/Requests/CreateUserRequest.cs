@@ -1,4 +1,4 @@
-﻿namespace ProblemDetailsExample.V1.Controllers.Model.Request;
+﻿namespace ProblemDetailsExample.V1.Controllers.Model.Requests;
 
 public class CreateUserRequest
 {

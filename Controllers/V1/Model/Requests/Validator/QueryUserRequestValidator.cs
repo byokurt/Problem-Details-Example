@@ -1,7 +1,7 @@
 ﻿using FluentValidation;
 using FluentValidation.Results;
 
-namespace ProblemDetailsExample.Controllers.V1.Model.Request.Validator;
+namespace ProblemDetailsExample.Controllers.V1.Model.Requests.Validator;
 
 public class QueryUserRequestValidator : AbstractValidator<QueryUsersRequest>
 {

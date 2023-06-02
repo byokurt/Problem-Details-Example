@@ -1,6 +1,6 @@
 ﻿using System.Text.Json.Serialization;
 
-namespace ProblemDetailsExample.Proxies.Demo.Requestes;
+namespace ProblemDetailsExample.Proxies.Demo.Requests;
 
 public class DemoQueryRequest
 {

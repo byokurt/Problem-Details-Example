@@ -4,7 +4,7 @@ using System.Net.Mime;
 using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
 using ProblemDetailsExample.Extensions;
-using ProblemDetailsExample.Proxies.Demo.Requestes;
+using ProblemDetailsExample.Proxies.Demo.Requests;
 using ProblemDetailsExample.Proxies.Demo.Responses;
 
 namespace ProblemDetailsExample.Proxies.Demo;

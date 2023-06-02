@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace ProblemDetailsExample.Controllers.V1.Model.Response
+namespace ProblemDetailsExample.Controllers.V1.Model.Responses
 {
     public class QueryUsersResponse
     {

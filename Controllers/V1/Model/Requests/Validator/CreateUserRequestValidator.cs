@@ -1,6 +1,6 @@
 ﻿using FluentValidation;
 using FluentValidation.Results;
-using ProblemDetailsExample.V1.Controllers.Model.Request;
+using ProblemDetailsExample.V1.Controllers.Model.Requests;
 
 namespace ProblemDetailsExample.Controllers.V1.Model.Request.Validator;
 
