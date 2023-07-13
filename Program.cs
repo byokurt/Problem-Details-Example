@@ -1,7 +1,8 @@
 using System.Net.Http.Headers;
+using System.Text.Json;
+using System.Text.Json.Serialization;
 using FluentValidation;
 using FluentValidation.AspNetCore;
-using Microsoft.AspNetCore.Diagnostics.HealthChecks;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
 using ProblemDetailsExample.Constant;
@@ -22,11 +23,19 @@ builder.Services.AddVersionedApiExplorer(options =>
     options.SubstituteApiVersionInUrl = true;
 });
 
-builder.Services.AddControllers(options => { options.Filters.Add(new ProblemDetailsExceptionFilter()); });
+builder.Services.AddControllers(options => { options.Filters.Add(new ProblemDetailsExceptionFilter()); }).AddJsonOptions(options =>
+{
+    options.JsonSerializerOptions.DictionaryKeyPolicy = JsonNamingPolicy.CamelCase;
+    options.JsonSerializerOptions.PropertyNamingPolicy = JsonNamingPolicy.CamelCase;
+    options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
+});
 
-builder.Services.AddFluentValidationAutoValidation();
+builder.Services.AddHeaderPropagation(o =>
+{
+    o.Headers.Add("ClientId", "DemoClientId");
+});
 
-builder.Services.AddValidatorsFromAssemblyContaining<Program>();
+builder.Services.AddValidatorsFromAssemblyContaining<Program>().AddFluentValidationAutoValidation(fv => fv.DisableDataAnnotationsValidation = true);
 
 builder.Services.AddEndpointsApiExplorer();
 
@@ -41,8 +50,6 @@ builder.Services.AddHttpClient<IDemoApiProxy, DemoApiProxy>(c =>
     c.BaseAddress = new Uri(builder.Configuration["DemoApiUrl"] ?? string.Empty);
     c.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
 }).AddPolicyHandler(HttpPolicies.GetRetryPolicy).AddPolicyHandler(HttpPolicies.GetCircuitBreakerPolicy());
-
-builder.Services.AddSwagger();
 
 builder.Services.AddRedis(builder.Configuration);
 
