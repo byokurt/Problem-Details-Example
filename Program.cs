@@ -39,7 +39,7 @@ builder.Services.AddValidatorsFromAssemblyContaining<Program>().AddFluentValidat
 
 builder.Services.AddEndpointsApiExplorer();
 
-builder.Services.AddSwaggerGen();
+builder.Services.AddSwagger();
 
 builder.Services.AddHealthChecks().AddCheck("self", () => HealthCheckResult.Healthy(), tags: new[] { "Liveness", "Readiness" });
 
