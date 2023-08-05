@@ -49,7 +49,10 @@ builder.Services.AddHttpClient<IDemoApiProxy, DemoApiProxy>(c =>
 {
     c.BaseAddress = new Uri(builder.Configuration["DemoApiUrl"] ?? string.Empty);
     c.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
-}).AddPolicyHandler(HttpPolicies.GetRetryPolicy).AddPolicyHandler(HttpPolicies.GetCircuitBreakerPolicy());
+})
+    .AddHeaderPropagation()
+    .AddPolicyHandler(HttpPolicies.GetRetryPolicy)
+    .AddPolicyHandler(HttpPolicies.GetCircuitBreakerPolicy());
 
 builder.Services.AddRedis(builder.Configuration);
 
