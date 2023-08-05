@@ -79,31 +79,7 @@ public class UserController : ControllerBase
     [ProducesResponseType(StatusCodes.Status404NotFound, Type = typeof(ProblemDetails))]
     public async Task<IActionResult> Get(int id)
     {
-        User? user = await _distributedCache.Get<User>($"user_{id}");
-
-        if (user == null)
-        {
-            user = await _demoDbContext.Users.FirstOrDefaultAsync(w => w.Id == id);
-
-            if (user == null)
-            {
-                ProblemDetails problemDetails = new ProblemDetails()
-                {
-                    Status = StatusCodes.Status404NotFound,
-                    Title = "User Not Found.",
-                    Type = "user-not-found",
-                    Detail = "There is no record at Db for the id",
-                    Extensions =
-                    {
-                        new KeyValuePair<string, object?>("Id", 1)
-                    }
-                };
-
-                throw new ProblemDetailsException(problemDetails);
-            }
-
-            await _distributedCache.Set($"user_{id}", user, TimeSpan.FromMinutes(5));
-        }
+        User user = await GetOrThrowExceptionIfUserNotFound(id);
 
         return Ok(user);
     }
@@ -203,5 +179,36 @@ public class UserController : ControllerBase
         await _demoDbContext.SaveChangesAsync();
 
         return NoContent();
+    }
+
+    private async Task<User> GetOrThrowExceptionIfUserNotFound(int userId)
+    {
+        User? user = await _distributedCache.Get<User>($"user_{userId}");
+
+        if (user == null)
+        {
+            user = await _demoDbContext.Users.FirstOrDefaultAsync(w => w.Id == userId);
+
+            if (user == null)
+            {
+                ProblemDetails problemDetails = new ProblemDetails()
+                {
+                    Status = StatusCodes.Status404NotFound,
+                    Title = "User Not Found.",
+                    Type = "user-not-found",
+                    Detail = "There is no record at Db for the id",
+                    Extensions =
+                    {
+                        new KeyValuePair<string, object?>("Id", 1)
+                    }
+                };
+
+                throw new ProblemDetailsException(problemDetails);
+            }
+
+            await _distributedCache.Set($"user_{userId}", user, TimeSpan.FromMinutes(5));
+        }
+
+        return user;
     }
 }
