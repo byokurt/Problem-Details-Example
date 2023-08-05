@@ -46,7 +46,7 @@ namespace ProblemDetailsExample.Models.Pagination
             headerValue += $"<{lastPageUrl}>; rel=\"last\",";
 
             string firstPageUrl = requestUrl.ToLowerInvariant().Replace($"page={page.Index}", $"page=1");
-            headerValue += $"<{lastPageUrl}>; rel=\"first\",";
+            headerValue += $"<{firstPageUrl}>; rel=\"first\",";
 
             if (page.HasPreviousPage)
             {
