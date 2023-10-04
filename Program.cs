@@ -155,4 +155,4 @@ app.MapHealthChecks("/live", new HealthCheckOptions() {Predicate = p=>p.Tags.Con
 
 app.MapHealthChecks("/ready", new HealthCheckOptions() {Predicate = p=>p.Tags.Contains("Readiness")});
 
-app.Run();
+await app.RunAsync();
