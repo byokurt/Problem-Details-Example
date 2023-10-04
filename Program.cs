@@ -109,7 +109,7 @@ builder.Services.AddBackgroundService();
 
 var app = builder.Build();
 
-await Seeder.MigrateWithData(app);
+await app.MigrateWithData();
 
 ForwardedHeadersOptions forwardedHeadersOptions = new ForwardedHeadersOptions
 {
