@@ -3,6 +3,7 @@ using System.Text.Json;
 using System.Text.Json.Serialization;
 using FluentValidation;
 using FluentValidation.AspNetCore;
+using Microsoft.AspNetCore.Diagnostics.HealthChecks;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
 using ProblemDetailsExample.Constant;
@@ -12,8 +13,39 @@ using ProblemDetailsExample.Extensions;
 using ProblemDetailsExample.Filters;
 using ProblemDetailsExample.Middleware;
 using ProblemDetailsExample.Proxies.Demo;
+using Serilog;
+using Serilog.Events;
 
 var builder = WebApplication.CreateBuilder(args);
+
+string env = builder.Environment.EnvironmentName;
+
+builder.Configuration.SetBasePath(Directory.GetCurrentDirectory());
+builder.Configuration.AddJsonFile("appsettings.json", false, false);
+builder.Configuration.AddJsonFile($"appsettings.{env}.json", false, true);
+builder.Configuration.AddEnvironmentVariables();
+
+builder.Logging.ClearProviders();
+
+builder.Host.UseSerilog((context, configuration) =>
+{
+    configuration.Enrich.FromLogContext();
+    configuration.Enrich.WithProperty("BusinessDomain", "Demo");
+    configuration.Enrich.WithProperty("Host", Environment.MachineName);
+    configuration.Enrich.WithProperty("Environment", context.HostingEnvironment.EnvironmentName);
+    configuration.Enrich.WithProperty("Cloud", context.Configuration["CloudProvider"]!);
+    configuration.Enrich.WithProperty("BuildId", context.Configuration["BuildId"]!);
+    configuration.MinimumLevel.Override("Microsoft", LogEventLevel.Error);
+    configuration.MinimumLevel.Override("Microsoft.Hosting.Lifetime", LogEventLevel.Information);
+    configuration.MinimumLevel.Override("System.Net.Http.HttpClient", LogEventLevel.Warning);
+    configuration.ReadFrom.Configuration(context.Configuration);
+});
+
+builder.WebHost.ConfigureKestrel(options =>
+{
+    options.Limits.MaxConcurrentConnections = null;
+    options.Limits.MaxConcurrentUpgradedConnections = null;
+});
 
 builder.Services.AddApiVersioning(options => { options.ReportApiVersions = true; });
 
@@ -49,10 +81,7 @@ builder.Services.AddHttpClient<IDemoApiProxy, DemoApiProxy>(c =>
 {
     c.BaseAddress = new Uri(builder.Configuration["DemoApiUrl"] ?? string.Empty);
     c.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
-})
-    .AddHeaderPropagation()
-    .AddPolicyHandler(HttpPolicies.GetRetryPolicy)
-    .AddPolicyHandler(HttpPolicies.GetCircuitBreakerPolicy());
+}).AddHeaderPropagation().AddPolicyHandler(HttpPolicies.GetRetryPolicy).AddPolicyHandler(HttpPolicies.GetCircuitBreakerPolicy());
 
 builder.Services.AddRedis(builder.Configuration);
 
@@ -87,8 +116,8 @@ app.UseAuthorization();
 
 app.MapControllers();
 
-app.MapHealthChecks("/live");
+app.MapHealthChecks("/live", new HealthCheckOptions() {Predicate = p=>p.Tags.Contains("Liveness")});
 
-app.MapHealthChecks("/ready");
+app.MapHealthChecks("/ready", new HealthCheckOptions() {Predicate = p=>p.Tags.Contains("Readiness")});
 
 app.Run();
