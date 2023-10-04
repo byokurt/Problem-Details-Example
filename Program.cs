@@ -3,9 +3,13 @@ using System.Text.Json;
 using System.Text.Json.Serialization;
 using FluentValidation;
 using FluentValidation.AspNetCore;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Diagnostics.HealthChecks;
+using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
+using Microsoft.IdentityModel.Tokens;
 using ProblemDetailsExample.Constant;
 using ProblemDetailsExample.Data;
 using ProblemDetailsExample.Data.Seeds;
@@ -75,6 +79,20 @@ builder.Services.AddSwagger();
 
 builder.Services.AddHealthChecks().AddCheck("self", () => HealthCheckResult.Healthy(), tags: new[] { "Liveness", "Readiness" });
 
+builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJwtBearer(JwtBearerDefaults.AuthenticationScheme, options =>
+{
+    options.Authority = builder.Configuration["IdentityServer:Authority"];
+    options.TokenValidationParameters = new TokenValidationParameters
+    {
+        ValidateAudience = false
+    };
+});
+
+builder.Services.AddAuthorization(o =>
+{
+    o.DefaultPolicy = new AuthorizationPolicyBuilder().RequireAuthenticatedUser().AddAuthenticationSchemes(JwtBearerDefaults.AuthenticationScheme).Build();
+});
+
 builder.Services.AddDbContext<DemoDbContext>(options => { options.UseSqlServer(builder.Configuration.GetConnectionString("DemoCnn") ?? string.Empty, sqlOptions => { sqlOptions.EnableRetryOnFailure(3); }); });
 
 builder.Services.AddHttpClient<IDemoApiProxy, DemoApiProxy>(c =>
@@ -92,6 +110,23 @@ builder.Services.AddBackgroundService();
 var app = builder.Build();
 
 await Seeder.MigrateWithData(app);
+
+ForwardedHeadersOptions forwardedHeadersOptions = new ForwardedHeadersOptions
+{
+    ForwardedHeaders = ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto
+};
+
+forwardedHeadersOptions.KnownNetworks.Clear();
+
+forwardedHeadersOptions.KnownProxies.Clear();
+
+app.UseForwardedHeaders(forwardedHeadersOptions);
+
+string[] supportedUiCultures = { "en","tr" };
+
+RequestLocalizationOptions localizationOptions = new RequestLocalizationOptions().AddSupportedUICultures(supportedUiCultures);
+
+app.UseRequestLocalization(localizationOptions);
 
 app.UsePathBase("/demo");
 
