@@ -2,7 +2,7 @@
 using FluentValidation.Results;
 using ProblemDetailsExample.V1.Controllers.Model.Requests;
 
-namespace ProblemDetailsExample.Controllers.V1.Model.Request.Validator;
+namespace ProblemDetailsExample.Controllers.V1.Model.Requests.Validator;
 
 public class CreateUserRequestValidator : AbstractValidator<CreateUserRequest>
 {
