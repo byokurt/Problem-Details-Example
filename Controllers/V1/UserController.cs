@@ -24,19 +24,19 @@ public class UserController : ControllerBase
     private readonly ILogger<UserController> _logger;
     private readonly DemoDbContext _demoDbContext;
     private readonly ISendEndpointProvider _sendEndpointProvider;
-    private readonly IBusControl _busControl;
+    private readonly IBus _bus;
     private readonly IDistributedCache _distributedCache;
 
     public UserController(ILogger<UserController> logger,
-                          DemoDbContext demoDbContext,
-                          ISendEndpointProvider sendEndpointProvider,
-                          IBusControl busControl,
-                          IDistributedCache distributedCache)
+        DemoDbContext demoDbContext,
+        ISendEndpointProvider sendEndpointProvider,
+        IBus bus,
+        IDistributedCache distributedCache)
     {
         _logger = logger;
         _demoDbContext = demoDbContext;
         _sendEndpointProvider = sendEndpointProvider;
-        _busControl = busControl;
+        _bus = bus;
         _distributedCache = distributedCache;
     }
 
@@ -99,7 +99,7 @@ public class UserController : ControllerBase
 
         await _demoDbContext.SaveChangesAsync();
 
-        await _busControl.Publish<DemoEvent>(new DemoEvent()
+        await _bus.Publish<DemoEvent>(new DemoEvent()
         {
             Name = request.Name,
             Surname = request.Surename
