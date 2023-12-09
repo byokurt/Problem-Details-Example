@@ -109,6 +109,8 @@ public class UserController : ControllerBase
 
         await sendEndpoint.Send(new DemoEvent() { Name = request.Name, Surname = request.Surename });
 
+        _logger.LogInformation($"User created");
+        
         return Created("/users/", user.Id);
     }
 
