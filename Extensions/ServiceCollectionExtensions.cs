@@ -34,14 +34,12 @@ public static class ServiceCollectionExtensions
         services.AddSingleton(_ => lockProvider);
     }
 
-    public static IServiceCollection AddBackgroundService(this IServiceCollection services)
+    public static void AddBackgroundService(this IServiceCollection services)
     {
         services.AddHostedService<DemoBackgroundService>();
-
-        return services;
     }
 
-    public static IServiceCollection AddMasTransit(this IServiceCollection services, IConfiguration configuration)
+    public static void AddMasTransit(this IServiceCollection services, IConfiguration configuration)
     {
         services.AddMassTransit(x =>
         {
@@ -69,7 +67,5 @@ public static class ServiceCollectionExtensions
                 });
             });
         });
-
-        return services;
     }
 }
