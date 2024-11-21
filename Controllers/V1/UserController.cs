@@ -27,7 +27,8 @@ public class UserController : ControllerBase
     private readonly IBus _bus;
     private readonly IDistributedCache _distributedCache;
 
-    public UserController(ILogger<UserController> logger,
+    public UserController(
+        ILogger<UserController> logger,
         DemoDbContext demoDbContext,
         ISendEndpointProvider sendEndpointProvider,
         IBus bus,
