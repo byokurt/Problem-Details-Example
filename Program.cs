@@ -15,8 +15,11 @@ using ProblemDetailsExample.Data;
 using ProblemDetailsExample.Data.Seeds;
 using ProblemDetailsExample.Extensions;
 using ProblemDetailsExample.Filters;
+using ProblemDetailsExample.Jobs;
 using ProblemDetailsExample.Middleware;
 using ProblemDetailsExample.Proxies.Demo;
+using ProblemDetailsExample.Services;
+using ProblemDetailsExample.Services.Interfaces;
 using Serilog;
 using Serilog.Events;
 
@@ -106,6 +109,8 @@ builder.Services.AddRedis(builder.Configuration);
 builder.Services.AddMasTransit(builder.Configuration);
 
 builder.Services.AddBackgroundService();
+
+builder.Services.AddScoped<IOutboxMessagePublisherService, OutboxMessagePublisherService>();
 
 var app = builder.Build();
 

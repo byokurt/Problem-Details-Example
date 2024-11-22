@@ -37,6 +37,7 @@ public static class ServiceCollectionExtensions
     public static void AddBackgroundService(this IServiceCollection services)
     {
         services.AddHostedService<DemoBackgroundService>();
+        services.AddHostedService<OutboxMessagePublisherHostedService>();
     }
 
     public static void AddMasTransit(this IServiceCollection services, IConfiguration configuration)

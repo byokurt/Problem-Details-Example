@@ -7,6 +7,7 @@
     </PropertyGroup>
 
     <ItemGroup>
+        <PackageReference Include="Dapper" Version="2.0.123" />
         <PackageReference Include="FluentValidation.AspNetCore" Version="11.3.0" />
         <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="7.0.11" />
         <PackageReference Include="Microsoft.AspNetCore.Mvc.Versioning" Version="5.1.0" />
@@ -47,7 +48,6 @@
       <None Remove="Data\Seeds\" />
     </ItemGroup>
     <ItemGroup>
-      <Folder Include="Jobs\" />
       <Folder Include="Models\" />
       <Folder Include="Models\Pagination\" />
       <Folder Include="Consumers\" />

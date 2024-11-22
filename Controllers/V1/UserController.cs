@@ -12,6 +12,7 @@ using ProblemDetailsExample.V1.Controllers.Model.Requests;
 using ProblemDetailsExample.Events;
 using Microsoft.Extensions.Caching.Distributed;
 using ProblemDetailsExample.Extensions;
+using ProblemDetailsExample.Factories.Interfaces;
 
 namespace ProblemDetailsExample.Controllers.V1;
 
@@ -26,19 +27,22 @@ public class UserController : ControllerBase
     private readonly ISendEndpointProvider _sendEndpointProvider;
     private readonly IBus _bus;
     private readonly IDistributedCache _distributedCache;
+    private readonly IOutboxMessageFactory _outboxMessageFactory;
 
     public UserController(
         ILogger<UserController> logger,
         DemoDbContext demoDbContext,
         ISendEndpointProvider sendEndpointProvider,
         IBus bus,
-        IDistributedCache distributedCache)
+        IDistributedCache distributedCache, 
+        IOutboxMessageFactory outboxMessageFactory)
     {
         _logger = logger;
         _demoDbContext = demoDbContext;
         _sendEndpointProvider = sendEndpointProvider;
         _bus = bus;
         _distributedCache = distributedCache;
+        _outboxMessageFactory = outboxMessageFactory;
     }
 
     [HttpGet]
@@ -98,13 +102,19 @@ public class UserController : ControllerBase
 
         _demoDbContext.Users.Add(user);
 
-        await _demoDbContext.SaveChangesAsync();
-
-        await _bus.Publish<DemoEvent>(new DemoEvent()
+        DemoEvent demoEvent = new DemoEvent()
         {
             Name = request.Name,
             Surname = request.Surename
-        });
+        };
+
+        OutboxMessage outboxMessage = _outboxMessageFactory.From(demoEvent, DateTime.Now);
+        
+        _demoDbContext.OutboxMessages.Add(outboxMessage);
+
+        await _demoDbContext.SaveChangesAsync();
+
+        await _bus.Publish<DemoEvent>(demoEvent);
 
         ISendEndpoint sendEndpoint = await _sendEndpointProvider.GetSendEndpoint(new Uri($"queue:DemoConsumer"));
 
