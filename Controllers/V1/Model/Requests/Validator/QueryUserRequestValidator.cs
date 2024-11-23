@@ -10,6 +10,7 @@ public class QueryUserRequestValidator : AbstractValidator<QueryUsersRequest>
         if (context.InstanceToValidate == null)
         {
             result.Errors.Add(new ValidationFailure("Model", "Please ensure a model was supplied."));
+            
             return false;
         }
 
@@ -22,6 +23,7 @@ public class QueryUserRequestValidator : AbstractValidator<QueryUsersRequest>
         ClassLevelCascadeMode = CascadeMode.Stop;
 
         RuleFor(model => model.Page).GreaterThan(0);
+        
         RuleFor(model => model.PageSize).ExclusiveBetween(0, 100);
     }
 }

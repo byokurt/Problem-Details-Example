@@ -1,12 +1,13 @@
 ﻿using FluentValidation;
 using FluentValidation.Results;
+using ProblemDetailsExample.Controllers.V1.Model.Requests.Enums;
 using ProblemDetailsExample.V1.Controllers.Model.Requests;
 
 namespace ProblemDetailsExample.Controllers.V1.Model.Requests.Validator;
 
-public class CreateUserRequestValidator : AbstractValidator<CreateUserRequest>
+public class CreateTransactionRequestValidator : AbstractValidator<CreateTransactionRequest>
 {
-    protected override bool PreValidate(ValidationContext<CreateUserRequest> context, ValidationResult result)
+    protected override bool PreValidate(ValidationContext<CreateTransactionRequest> context, ValidationResult result)
     {
         if (context.InstanceToValidate == null)
         {
@@ -18,13 +19,11 @@ public class CreateUserRequestValidator : AbstractValidator<CreateUserRequest>
         return true;
     }
 
-    public CreateUserRequestValidator()
+    public CreateTransactionRequestValidator()
     {
         RuleLevelCascadeMode = CascadeMode.Stop;
         ClassLevelCascadeMode = CascadeMode.Stop;
 
-        RuleFor(model => model.Name).NotNull().NotEmpty();
-        
-        RuleFor(model => model.Surename).NotNull().NotEmpty();
+        RuleFor(model => model.Type).NotEmpty().IsInEnum().NotEqual(TransactionType.Unknown);
     }
 }

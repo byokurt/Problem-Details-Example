@@ -15,7 +15,10 @@ using ProblemDetailsExample.Data;
 using ProblemDetailsExample.Data.Seeds;
 using ProblemDetailsExample.Extensions;
 using ProblemDetailsExample.Filters;
-using ProblemDetailsExample.Jobs;
+using ProblemDetailsExample.Handlers;
+using ProblemDetailsExample.Handlers.Deposit;
+using ProblemDetailsExample.Handlers.Interfaces;
+using ProblemDetailsExample.Handlers.Withdrawal;
 using ProblemDetailsExample.Middleware;
 using ProblemDetailsExample.Proxies.Demo;
 using ProblemDetailsExample.Services;
@@ -111,6 +114,10 @@ builder.Services.AddMasTransit(builder.Configuration);
 builder.Services.AddBackgroundService();
 
 builder.Services.AddScoped<IOutboxMessagePublisherService, OutboxMessagePublisherService>();
+
+builder.Services.AddScoped<ITransactionHandler, DepositTransactionHandler>();
+builder.Services.AddScoped<ITransactionHandler, WithdrawalTransactionHandler>();
+builder.Services.AddScoped<ITransactionHandlerResolver, TransactionHandlerResolver>();
 
 var app = builder.Build();
 
